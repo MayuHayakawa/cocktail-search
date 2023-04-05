@@ -8,6 +8,7 @@ const Search = () => {
   // const [ loading, setLoading ] = useState(false);
 
   const [ selected, setSelected ] = useState(""); //users select
+  const [ firstLetter, setFirstLetter ] = useState("");
   const [ filteredData, setFilteredData ] = useState([]); //array that mach recipes
   const [ wordEntered, setWordEntered ] = useState("");
 
@@ -51,25 +52,54 @@ const Search = () => {
     }
   }
 
+  useEffect(() => {
+    console.log("firstletter changes");
+    const fetchFilteredDataByName = async () => {
+      try {
+        const res = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${firstLetter}`);
+        setFilteredData(res.data.drinks);
+      }
+      catch (error){
+        console.log(`Error while fetching api: ${error}`);
+      }
+    }
+    fetchFilteredDataByName();
+  }, [firstLetter]);
+
+  useEffect(() => {
+    // console.log(filteredData);
+    if(filteredData != "") {
+      const newFilter = filteredData.filter((data) => {
+        return data.strDrink.toLowerCase().includes(wordEntered.toLowerCase());
+      });
+      if(wordEntered === "") {
+        setFilteredData([]);
+      } else {
+        console.log(newFilter);
+        setFilteredData(newFilter);
+      }
+    }
+  }, [wordEntered])
+
   // autocorrect
   const handleFilter = (e) => {
     const searchWord = e.target.value;
     setWordEntered(searchWord);
     if(selected === 'Name') {
-      let firstLetter = searchWord.charAt(0);
-      console.log(firstLetter);
-      // how can I call fetchFilteredDataByName() only the time firstletter changes??
-      fetchFilteredDataByName(firstLetter);
+      // const firstLetter = searchWord.charAt(0);
+      setFirstLetter(searchWord.charAt(0));
+      // console.log(firstLetter);
+      // fetchFilteredDataByName(firstLetter);
     };
-    const newFilter = filteredData.filter((data) => {
-      return data.strDrink.toLowerCase().includes(searchWord.toLowerCase());
-    });
-    if(searchWord === "") {
-      setFilteredData([]);
-    } else {
-      console.log(newFilter);
-      setFilteredData(newFilter);
-    }
+    // const newFilter = filteredData.filter((data) => {
+    //   return data.strDrink.toLowerCase().includes(searchWord.toLowerCase());
+    // });
+    // if(searchWord === "") {
+    //   setFilteredData([]);
+    // } else {
+    //   console.log(newFilter);
+    //   setFilteredData(newFilter);
+    // }
   };
 
   async function fetchFilteredDataByName(firstLetter) {
@@ -114,20 +144,6 @@ const Search = () => {
             // onKeyUp={handleFilter}
             onChange={handleFilter}
           />
-          <div>
-            { filteredData.length != 0 && (
-              <ul>
-                {filteredData.map((value) => {
-                  return (
-                    <li key={value.idDrink}>
-                      {value.strDrink}
-                      {value.strDrinkThumb}
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </div>
           <button>
             <TbSearch />
           </button>
