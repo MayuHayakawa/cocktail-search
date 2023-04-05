@@ -66,6 +66,7 @@ const Search = () => {
     fetchFilteredDataByName();
   }, [firstLetter]);
 
+  // ERROR: filteredData is undefined?? 
   useEffect(() => {
     // console.log(filteredData);
     if(filteredData != "") {
@@ -144,6 +145,20 @@ const Search = () => {
             // onKeyUp={handleFilter}
             onChange={handleFilter}
           />
+          <div>
+            { filteredData.length != 0 && (
+              <ul>
+                {filteredData.map((value) => {
+                  return (
+                    <li key={value.idDrink}>
+                      {value.strDrink}
+                      {value.strDrinkThumb}
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
           <button>
             <TbSearch />
           </button>
