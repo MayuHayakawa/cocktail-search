@@ -1,0 +1,44 @@
+:root {
+  --light-bg-primary: #EC7E8F;
+  --light-bg-secondary: #00939C;
+  --light-font-primary: #FFFFFF;
+  --light-font-secondary: #E45C6C;
+  --light-font-third: #1FAD38;
+  --light-font-forth: #F9D802;
+
+  --dark-bg-primary: #012B7D;
+  --dark-bg-secondary: #6EB26D;
+  --dark-font-primary: #FDF8BE;
+  --dark-font-secondary: #FFFFFF;
+  --dark-font-third: #4C5F8A;
+  --dark-font-forth: #DCB000;
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Lato;
+}
+
+@font-face {
+  font-family: "Lato";
+  src: local("Lato-Regular"),
+    url("./fonts/Lato-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "LatoBold";
+  src: local("Lato-Bold"),
+    url("./fonts/Lato-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Seasrn";
+  src: local("SEASRN"),
+    url("./fonts/SEASRN.ttf") format("truetype");
+}
