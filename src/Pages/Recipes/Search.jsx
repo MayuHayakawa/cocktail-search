@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { TbSearch } from "react-icons/tb";
+import { CgClose } from "react-icons/cg";
 
 const Search = () => {
   const items = ['Name', 'Ingredient', 'Random'];
@@ -8,8 +9,9 @@ const Search = () => {
   // const [ loading, setLoading ] = useState(false);
 
   const [ selected, setSelected ] = useState(""); //users select
-  const [ firstLetter, setFirstLetter ] = useState("");
-  const [ filteredData, setFilteredData ] = useState([]); //array that mach recipes
+  const [ firstLetter, setFirstLetter ] = useState(""); //for name category
+  const [ categorizedData, setCategorizedData ] = useState([]); //initial data depends on category
+  const [ filteredData, setFilteredData ] = useState([]); //data that mach with user input
   const [ wordEntered, setWordEntered ] = useState("");
 
   const [ keyword, setKeyword ] = useState(""); // enter data
@@ -20,21 +22,21 @@ const Search = () => {
     switch(e.target.value) {
       case 'Name':
         setSelected('Name');
-        break;
+      break;
       case 'Ingredient':
-        setSelected('Ingredient'); //do i need it?
-        const fetchFilteredDataByIngredient = async () => {
+        setSelected('Ingredient');
+        const fetchCategorizedDataByIngredient = async () => {
           try {
             const res = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list`);
-            setFilteredData(res.data);
-            // console.log(filteredData);
+            console.log(res.data.drinks);
+            setCategorizedData(res.data.drinks);
           }
           catch (error) {
             console.log(`Error while fetching api: ${error}`);
           }
         }
-        fetchFilteredDataByIngredient();
-        break;
+        fetchCategorizedDataByIngredient();
+      break;
       case 'Random':
         setSelected('Random'); //do i need it?
         const fetchRecipesData = async () => {
@@ -48,30 +50,34 @@ const Search = () => {
           }
         }
         fetchRecipesData();
-        break;
+      break;
     }
   }
 
+  //get name category api data with first letter
   useEffect(() => {
-    console.log("firstletter changes");
-    const fetchFilteredDataByName = async () => {
-      try {
-        const res = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${firstLetter}`);
-        setFilteredData(res.data.drinks);
+    if(firstLetter != "") {
+      async function fetchCategorizedDataByName() {
+        try {
+          const res = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${firstLetter}`);
+          setCategorizedData(res.data.drinks);
+        }
+        catch (error){
+          console.log(`Error while fetching api: ${error}`);
+        }
       }
-      catch (error){
-        console.log(`Error while fetching api: ${error}`);
-      }
+      fetchCategorizedDataByName();
     }
-    fetchFilteredDataByName();
   }, [firstLetter]);
 
-  // ERROR: filteredData is undefined?? 
+  //autocrrect
   useEffect(() => {
-    // console.log(filteredData);
-    if(filteredData != "") {
-      const newFilter = filteredData.filter((data) => {
-        return data.strDrink.toLowerCase().includes(wordEntered.toLowerCase());
+    if(categorizedData) {
+      const newFilter = categorizedData.filter((data) => {
+        if(selected === 'Name') {
+          return data.strDrink.toLowerCase().includes(wordEntered.toLowerCase());
+        } else if(selected === 'Ingredient')
+          return data.strIngredient1.toLowerCase().includes(wordEntered.toLowerCase());
       });
       if(wordEntered === "") {
         setFilteredData([]);
@@ -82,40 +88,23 @@ const Search = () => {
     }
   }, [wordEntered])
 
-  // autocorrect
+  // setWordEntered and setFirstLetter for search by name
   const handleFilter = (e) => {
     const searchWord = e.target.value;
     setWordEntered(searchWord);
     if(selected === 'Name') {
-      // const firstLetter = searchWord.charAt(0);
       setFirstLetter(searchWord.charAt(0));
-      // console.log(firstLetter);
-      // fetchFilteredDataByName(firstLetter);
-    };
-    // const newFilter = filteredData.filter((data) => {
-    //   return data.strDrink.toLowerCase().includes(searchWord.toLowerCase());
-    // });
-    // if(searchWord === "") {
-    //   setFilteredData([]);
-    // } else {
-    //   console.log(newFilter);
-    //   setFilteredData(newFilter);
-    // }
+    }
   };
-
-  async function fetchFilteredDataByName(firstLetter) {
-    try {
-      const res = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${firstLetter}`);
-      setFilteredData(res.data.drinks);
-    }
-    catch (error){
-      console.log(`Error while fetching api: ${error}`);
-    }
-  }
   
   // {display}
   const onSubmitHandler = (e) => {
     // method
+  }
+
+  const clearInput = () => {
+    setFilteredData([]);
+    setWordEntered("");
   }
 
   return (
@@ -146,13 +135,23 @@ const Search = () => {
             onChange={handleFilter}
           />
           <div>
-            { filteredData.length != 0 && (
+            { filteredData && filteredData.length != 0 && selected === 'Name' && (
               <ul>
-                {filteredData.map((value) => {
+                {filteredData.map((data) => {
                   return (
-                    <li key={value.idDrink}>
-                      {value.strDrink}
-                      {value.strDrinkThumb}
+                    <li key={data.idDrink}>
+                      {data.strDrink}
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+            { filteredData && filteredData.length != 0 && selected === 'Ingredient' && (
+              <ul>
+                {filteredData.map((data) => {
+                  return (
+                    <li key={data.index}>
+                      {data.strIngredient1}
                     </li>
                   )
                 })}
@@ -160,7 +159,11 @@ const Search = () => {
             )}
           </div>
           <button>
-            <TbSearch />
+            { wordEntered.length === 0 ? (
+              <TbSearch />
+            ):(
+              <CgClose onClick={clearInput}/>
+            )}
           </button>
         </form>
     </>
