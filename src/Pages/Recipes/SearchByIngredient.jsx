@@ -1,10 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import styled from 'styled-components';
+import ThemeContext from '../../Context/ThemeContext';
 import axios from 'axios';
 import { TbSearch } from "react-icons/tb";
 import { CgClose } from "react-icons/cg";
 import RecipeCards from './RecipeCards';
 
+const InputContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  input {
+    width: 30%;
+    height: 2rem;
+  }
+  button {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.3rem;
+  }
+
+  
+`
+
 const SearchByIngredient = ( { placeholder,data } ) => {
+  const { theme } = useContext(ThemeContext);
+
   const [ filteredData, setFilteredData ] = useState([]);
   const [ wordEntered, setWordEntered ] = useState("");
   const [ isFocus, setIsFocus ] = useState(false);
@@ -55,7 +75,7 @@ const SearchByIngredient = ( { placeholder,data } ) => {
 
   return (
     <>
-      <div>
+      <InputContainer>
           <input
             onFocus={() => setIsFocus(true)}
             type="text"
@@ -90,7 +110,7 @@ const SearchByIngredient = ( { placeholder,data } ) => {
             </ul>
             )}
           </div>
-      </div>
+      </InputContainer>
       { recipes && recipes.length != 0 && (
         <RecipeCards data={recipes} />
       )}

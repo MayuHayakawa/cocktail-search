@@ -1,9 +1,33 @@
+import React, { useState, useEffect, useContext } from 'react';
+import styled from 'styled-components';
+import ThemeContext from '../../Context/ThemeContext';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react'
 import RecipeCards from './RecipeCards';
 
+const FirstLetters = styled.div`
+  display: flex;
+  justify-content: center;
+  div {
+    margin: 1rem;
+    button {
+      font-size: 1.1rem;
+      width: 2rem;
+      height: 2rem;
+      background-color: ${props => props.color === "light" ? "var(--light-bg-primary)" : "var(--dark-bg-primary)"};
+      color: ${props => props.color === "light" ? "var(--light-font-primary)" : "var(--dark-font-primary)" };
+      border: none;
+      cursor: pointer;
+      &:hover {
+        background-color: ${props => props.color === "light" ? "var(--light-bg-secondary)" : "var(--dark-bg-secondary)"};
+      }
+    }
+  }
+`
+
 const SearchByName = () => {
+  const { theme } = useContext(ThemeContext);
   const firstLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+  
   const [ firstLetter, setFirstLetter ] = useState("");
   const [ recipes, setRecipes ] = useState([]);
 
@@ -24,7 +48,7 @@ const SearchByName = () => {
 
   return (
     <>
-      <div>
+      <FirstLetters color={theme}>
         {firstLetters.map((value) => {
           return (
             <div key={value}>
@@ -32,7 +56,7 @@ const SearchByName = () => {
             </div>
           )
         })}
-      </div>
+      </FirstLetters>
       { recipes && recipes.length != 0 && (
         <RecipeCards data={recipes} />
       )}

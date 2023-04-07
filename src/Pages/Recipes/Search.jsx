@@ -16,15 +16,19 @@ const SearchContainer = styled.div`
       display: flex;
       text-align: center;
       width: 20%;
-      height: 3rem;
+      height: 4rem;
       &-label {
         display: block;
         width: 100%;
         height: 100%;
+        font-size: 1.5rem;
         background-color: ${props => props.color === "light" ? "var(--light-bg-primary)" : "var(--dark-bg-primary)"};
         color: ${props => props.color === "light" ? "var(--light-font-primary)" : "var(--dark-font-primary)" };
-        padding-top: 1rem;
+        padding-top: 1.1rem;
         cursor: pointer;
+        &:hover {
+          background-color: ${props => props.color === "light" ? "var(--light-bg-secondary)" : "var(--dark-bg-secondary)"};
+        }
         input {
           display: none;
           &:checked + .categoryContainer-option-label{
@@ -33,9 +37,7 @@ const SearchContainer = styled.div`
         }
       }
     }
-  }
-
-  
+  }  
 `
 
 const Search = () => {
