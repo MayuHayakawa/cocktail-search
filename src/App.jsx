@@ -6,6 +6,7 @@ import Navbar from './Components/Navbar/Navbar';
 import Hero from './Components/Hero/Hero';
 import Home from './Pages/Home/Home';
 import Recipes from './Pages/Recipes/Recipes';
+import Recipe from './Pages/Recipes/Recipe';
 import Favorite from './Pages/Favorite/Favorite';
 
 import "./fonts/Lato-Regular.ttf";
@@ -26,6 +27,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/recipes" element={<Recipes />}></Route>
+          <Route path="/recipes/:id" element={<Recipe />}></Route>
           <Route path="/favorite" element={<Favorite />}></Route>
         </Routes>
       </BrowserRouter>

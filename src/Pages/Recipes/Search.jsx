@@ -1,21 +1,52 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import ThemeContext from '../../Context/ThemeContext';
 import axios from 'axios';
-import { TbSearch } from "react-icons/tb";
-import { CgClose } from "react-icons/cg";
+import SearchByName from './SearchByName';
+import SearchByIngredient from './SearchByIngredient';
+
+const SearchContainer = styled.div`
+  padding: 2rem 5rem;
+  .categoryContainer {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: space-between;
+    &-option {
+      display: flex;
+      text-align: center;
+      width: 20%;
+      height: 3rem;
+      &-label {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-color: ${props => props.color === "light" ? "var(--light-bg-primary)" : "var(--dark-bg-primary)"};
+        color: ${props => props.color === "light" ? "var(--light-font-primary)" : "var(--dark-font-primary)" };
+        padding-top: 1rem;
+        cursor: pointer;
+        input {
+          display: none;
+          &:checked + .categoryContainer-option-label{
+            background-color: ${props => props.color === "light" ? "var(--light-font-primary)" : "var(--dark-font-primary)"};
+          }
+        }
+      }
+    }
+  }
+
+  
+`
 
 const Search = () => {
+  const { theme } = useContext(ThemeContext);
   const items = ['Name', 'Ingredient', 'Random'];
 
   // const [ loading, setLoading ] = useState(false);
-
   const [ selected, setSelected ] = useState(""); //users select
-  const [ firstLetter, setFirstLetter ] = useState(""); //for name category
-  const [ categorizedData, setCategorizedData ] = useState([]); //initial data depends on category
-  const [ filteredData, setFilteredData ] = useState([]); //data that mach with user input
-  const [ wordEntered, setWordEntered ] = useState("");
-
-  const [ keyword, setKeyword ] = useState(""); // enter data
-  const [ recipes, setRecipes ] = useState(""); //array recipes data from api
+  const [ ingredientsData, setIngredientsData ] = useState([]); //data that mach with user input
+  const [ recipeId, setRecipeId ] = useState("");
+  const navigate = useNavigate();
 
   // {set search field}
   const handleChange = (e) => {
@@ -25,25 +56,25 @@ const Search = () => {
       break;
       case 'Ingredient':
         setSelected('Ingredient');
-        const fetchCategorizedDataByIngredient = async () => {
+        const fetchIngredientsData = async () => {
           try {
             const res = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list`);
-            console.log(res.data.drinks);
-            setCategorizedData(res.data.drinks);
+            setIngredientsData(res.data.drinks);
           }
           catch (error) {
             console.log(`Error while fetching api: ${error}`);
           }
         }
-        fetchCategorizedDataByIngredient();
+        fetchIngredientsData();
       break;
       case 'Random':
         setSelected('Random'); //do i need it?
         const fetchRecipesData = async () => {
           try {
             const res = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/random.php`);
-            // console.log(res.data);
-            setRecipes(res.data);
+            console.log(res.data.drinks);
+            console.log(res.data.drinks[0].idDrink);
+            setRecipeId(res.data.drinks[0].idDrink);
           }
           catch (error) {
             console.log(`Error while fetching api: ${error}`);
@@ -53,120 +84,45 @@ const Search = () => {
       break;
     }
   }
-
-  //get name category api data with first letter
+    
   useEffect(() => {
-    if(firstLetter != "") {
-      async function fetchCategorizedDataByName() {
-        try {
-          const res = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${firstLetter}`);
-          setCategorizedData(res.data.drinks);
-        }
-        catch (error){
-          console.log(`Error while fetching api: ${error}`);
-        }
-      }
-      fetchCategorizedDataByName();
-    }
-  }, [firstLetter]);
+    handleRoute(recipeId);
+  },[recipeId]);
 
-  //autocrrect
-  useEffect(() => {
-    if(categorizedData) {
-      const newFilter = categorizedData.filter((data) => {
-        if(selected === 'Name') {
-          return data.strDrink.toLowerCase().includes(wordEntered.toLowerCase());
-        } else if(selected === 'Ingredient')
-          return data.strIngredient1.toLowerCase().includes(wordEntered.toLowerCase());
-      });
-      if(wordEntered === "") {
-        setFilteredData([]);
-      } else {
-        console.log(newFilter);
-        setFilteredData(newFilter);
-      }
-    }
-  }, [wordEntered])
-
-  // setWordEntered and setFirstLetter for search by name
-  const handleFilter = (e) => {
-    const searchWord = e.target.value;
-    setWordEntered(searchWord);
-    if(selected === 'Name') {
-      setFirstLetter(searchWord.charAt(0));
-    }
-  };
-  
-  // {display}
-  const onSubmitHandler = (e) => {
-    // method
-  }
-
-  const clearInput = () => {
-    setFilteredData([]);
-    setWordEntered("");
+  function handleRoute(id) {
+    navigate(`/recipes/${id}`);
   }
 
   return (
-    <>
-      <div>Search by...</div>
-        <div>
-          {items.map((item) => {
-            return (
-              <div key={item}>
+    <SearchContainer color={theme}>
+      <h2>Search by...</h2>
+      <div className="categoryContainer">
+        {items.map((item) => {
+          return (
+            <div className="categoryContainer-option" key={item}>
+              <label className="categoryContainer-option-label">
+                {item}
                 <input
-                  id={item}
                   type="radio"
                   value={item}
                   onChange={handleChange}
                   checked={item === selected}
                 />
-                <label htmlFor={item}>{item}</label>
-              </div>
-            )
-          })}
-        </div>
-        <form onSubmit={onSubmitHandler} >
-          <input
-            type="text"
-            placeholder='Search for a recipe...'
-            value={wordEntered}
-            // onKeyUp={handleFilter}
-            onChange={handleFilter}
-          />
-          <div>
-            { filteredData && filteredData.length != 0 && selected === 'Name' && (
-              <ul>
-                {filteredData.map((data) => {
-                  return (
-                    <li key={data.idDrink}>
-                      {data.strDrink}
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-            { filteredData && filteredData.length != 0 && selected === 'Ingredient' && (
-              <ul>
-                {filteredData.map((data) => {
-                  return (
-                    <li key={data.index}>
-                      {data.strIngredient1}
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </div>
-          <button>
-            { wordEntered.length === 0 ? (
-              <TbSearch />
-            ):(
-              <CgClose onClick={clearInput}/>
-            )}
-          </button>
-        </form>
-    </>
+              </label>
+            </div>
+          )
+        })}
+      </div>
+      { selected === 'Name' && (
+        <SearchByName />
+      )}
+      { selected === 'Ingredient' && (
+        <SearchByIngredient 
+          placeholder={'Input an ingredient'}
+          data={ingredientsData}
+        />
+      )}
+    </SearchContainer>
   )
 }
 
