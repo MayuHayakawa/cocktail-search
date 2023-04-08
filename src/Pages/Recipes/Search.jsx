@@ -9,7 +9,7 @@ import SearchByIngredient from './SearchByIngredient';
 const SearchContainer = styled.div`
   padding: 2rem 5rem;
   .categoryContainer {
-    margin: 2rem 0;
+    margin: 2rem 0 3rem 0;
     display: flex;
     justify-content: space-between;
     &-option {

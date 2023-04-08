@@ -9,17 +9,26 @@ import RecipeCards from './RecipeCards';
 const InputContainer = styled.div`
   display: flex;
   justify-content: center;
-  input {
+  .input-ingredient {
     width: 30%;
-    height: 2rem;
+    height: 2.5rem;
+    padding-left: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid ${props => props.color === "light" ? "var(--light-font-secondary)" : "var(--dark-font-secondary)" };;
   }
   button {
-    width: 2rem;
-    height: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: ${props => props.color === "light" ? "var(--light-bg-primary)" : "var(--dark-bg-primary)"};
+    color: ${props => props.color === "light" ? "var(--light-font-primary)" : "var(--dark-font-primary)" };
     font-size: 1.3rem;
+    text-align: center;
+    line-height: 50%;
+    border: none;
+    &:hover {
+      background-color: ${props => props.color === "light" ? "var(--light-bg-secondary)" : "var(--dark-bg-secondary)"};
+    }
   }
-
-  
 `
 
 const SearchByIngredient = ( { placeholder,data } ) => {
@@ -75,8 +84,9 @@ const SearchByIngredient = ( { placeholder,data } ) => {
 
   return (
     <>
-      <InputContainer>
+      <InputContainer color={theme}>
           <input
+            className="input-ingredient"
             onFocus={() => setIsFocus(true)}
             type="text"
             placeholder={placeholder}

@@ -33,7 +33,7 @@ const Nav = styled.nav`
             cursor: pointer;
             font-family: LatoBold;
             font-size: 1.3rem;
-            margin: auto 2rem;
+            margin: auto 1rem;
             a {
                 color: ${props => props.color === "light" ? "var(--light-font-primary)" : "var(--dark-font-primary)" };
                 text-decoration: none;
@@ -43,22 +43,37 @@ const Nav = styled.nav`
             }
         }
     }
-    `
+    @media screen and (max-width: 768px) {
+        h1 {
+            position: relative;
+            width: 100%;
+            text-align: center;
+        }
+        ul {
+            position: relative;
+            width: 30%;
+            padding: 1rem;
+            li {
+                display: none;
+            }
+        }
+    }
+`
 
 const Button = styled.button`
     background-color: ${props => props.color === "light" ? "var(--light-bg-secondary)" : "var(--dark-bg-secondary)" };
     color: ${props => props.color === "light" ? "var(--light-font-primary)" : "var(--dark-font-primary)" };
     box-sizing: border-box;
     display: flex;
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-family: LatoBold;
     justify-content: center;
-    line-height: 2.5rem;
-    padding: 0.75rem 1.65rem;
+    line-height: 1.5rem;
+    padding: 0.5rem 1rem;
     position: relative;
     text-align: center;
     text-decoration: none #000000 solid;
-    width: 7rem;
+    width: 5rem;
     /* max-width: 460px; */
     position: relative;
     cursor: pointer;
